@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
@@ -14,25 +15,27 @@ public class BouncingBalls extends JPanel {
     public final static int width = 500;
     public final static int height = 400;
     public ServerSocket servidor = new ServerSocket(12345);
-    private Ball ball = new Ball(128, 127);
     private Vector<Ball> list = new Vector();
 
     public BouncingBalls() throws IOException {
         setPreferredSize(new Dimension(width, height));
-        BallThread ballMove = new BallThread();
-        ballMove.start();
 
 
+            BallThread ballMove = new BallThread();
+            ballMove.start();
 
+            EntradaBalls entradas = new EntradaBalls();
+            entradas.start();
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public synchronized void mouseClicked(MouseEvent e) {
-                Ball ball = new Ball(e.getX(), e.getY());
-                list.add(ball);
-                paintChildren(getGraphics());
-            }
-        });
+//
+//        addMouseListener(new MouseAdapter() {
+//            @Override
+//            public synchronized void mouseClicked(MouseEvent e) {
+//                Ball ball = new Ball(e.getX(), e.getY());
+//                list.add(ball);
+//                paintChildren(getGraphics());
+//            }
+//        });
 
 
     }
@@ -58,21 +61,7 @@ public class BouncingBalls extends JPanel {
 //
 //    }
 
-    public synchronized void paintBalls() {
-        int x_volatil = 74;
-        int y_volatil = 0;
-        try {
-            Socket socket = servidor.accept();
 
-            Ball ball = new Ball(x_volatil * -1, y_volatil = 0);
-            list.add(ball);
-            x_volatil++;
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     public static void main(String[] args) throws IOException {
@@ -95,8 +84,8 @@ public class BouncingBalls extends JPanel {
             cont = true;
             while(cont) {
                 for (Ball b : list ){
-                    ball.move();
-                    repaint();
+                    b.move();
+//                    repaint();
 
                 }
                 repaint();
@@ -109,6 +98,31 @@ public class BouncingBalls extends JPanel {
             }
         }
 
+    }
+
+    public class EntradaBalls extends Thread {
+
+        private Socket socket;
+
+        public EntradaBalls(Socket socket) {
+            this.socket = socket;
+        }
+        public EntradaBalls() {
+
+        }
+        public void run(){
+            while(true) {
+                try {
+                    Socket cliente = servidor.accept();
+                    ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
+                    Ball ball = (Ball) entrada.readObject();
+                    list.add(ball);
+                    paintChildren(getGraphics());
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 
