@@ -21,6 +21,15 @@ public class Ball implements Serializable {
         criarID();
 
     }
+    public Ball(int x, int y,Color color) {
+        this.x = x;
+        this.y = y;
+        color = new Color(x % 256, y % 256, (x + y) % 256);
+        dx = x % 10 + 1;
+        dy = y % 10 + 1;
+        criarID();
+
+    }
     public void criarID() {
         this.id = UUID.randomUUID().toString();
     }
@@ -41,7 +50,7 @@ public class Ball implements Serializable {
         x += dx;
         y += dy;
 
-        System.out.println(getID() + " is moving....");
+//        System.out.println(getID() + " is moving....");
     }
 
     public synchronized void paint(Graphics paint) {

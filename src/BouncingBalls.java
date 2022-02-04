@@ -21,21 +21,11 @@ public class BouncingBalls extends JPanel {
         setPreferredSize(new Dimension(width, height));
 
 
-            BallThread ballMove = new BallThread();
-            ballMove.start();
+        BallThread ballMove = new BallThread();
+        ballMove.start();
 
-            EntradaBalls entradas = new EntradaBalls();
-            entradas.start();
-
-//
-//        addMouseListener(new MouseAdapter() {
-//            @Override
-//            public synchronized void mouseClicked(MouseEvent e) {
-//                Ball ball = new Ball(e.getX(), e.getY());
-//                list.add(ball);
-//                paintChildren(getGraphics());
-//            }
-//        });
+        EntradaBalls entradas = new EntradaBalls();
+        entradas.start();
 
 
     }
@@ -46,20 +36,6 @@ public class BouncingBalls extends JPanel {
             ball.move();
         }
     }
-
-//    public synchronized void moveBalls(Graphics g, Ball b) {
-//        Thread t1 = new Thread(() -> {
-//            while (true) {
-//                b.paint(g);
-//                b.move();
-//
-//            }
-//
-//        });
-//        t1.start();
-//
-//
-//    }
 
 
 
@@ -74,25 +50,25 @@ public class BouncingBalls extends JPanel {
         frame.setVisible(true);
 
 
-
     }
-    public class BallThread extends Thread{
+
+    public class BallThread extends Thread {
 
         public boolean cont = false;
 
         public synchronized void run() {
             cont = true;
-            while(cont) {
-                for (Ball b : list ){
+            while (cont) {
+                for (Ball b : list) {
                     b.move();
-//                    repaint();
+                    System.out.println(Thread.currentThread() + "make " +b.getID()+ " moving ");
 
                 }
                 repaint();
 
                 try {
                     Thread.sleep(50);
-                }catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -107,17 +83,21 @@ public class BouncingBalls extends JPanel {
         public EntradaBalls(Socket socket) {
             this.socket = socket;
         }
+
         public EntradaBalls() {
 
         }
-        public void run(){
-            while(true) {
+
+        public synchronized void run() {
+            while (true) {
                 try {
                     Socket cliente = servidor.accept();
                     ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
                     Ball ball = (Ball) entrada.readObject();
                     list.add(ball);
                     paintChildren(getGraphics());
+                    System.out.println(Thread.currentThread() + " adding new ball" + ball.getID());
+
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
