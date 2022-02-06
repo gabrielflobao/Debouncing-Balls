@@ -41,7 +41,6 @@ public class Ball implements Serializable {
         x += dx;
         y += dy;
 
-        System.out.println(getID() + " is moving....");
     }
 
     public synchronized void paint(Graphics paint) {
