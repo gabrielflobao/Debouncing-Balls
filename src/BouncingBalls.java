@@ -21,25 +21,7 @@ public class BouncingBalls extends JPanel {
 
     public BouncingBalls() throws IOException {
         setPreferredSize(new Dimension(width, height));
-
-//
-//            BallThread ballMove = new BallThread();
-//            ballMove.start();
-
             EntradaBalls entradas = new EntradaBalls();
-//            entradas.start();
-
-//
-//        addMouseListener(new MouseAdapter() {
-//            @Override
-//            public synchronized void mouseClicked(MouseEvent e) {
-//                Ball ball = new Ball(e.getX(), e.getY());
-//                list.add(ball);
-//                paintChildren(getGraphics());
-//            }
-//        });
-
-
     }
 
     public synchronized void paintChildren(Graphics g) {
@@ -48,22 +30,6 @@ public class BouncingBalls extends JPanel {
             ball.move();
         }
     }
-
-//    public synchronized void moveBalls(Graphics g, Ball b) {
-//        Thread t1 = new Thread(() -> {
-//            while (true) {
-//                b.paint(g);
-//                b.move();
-//
-//            }
-//
-//        });
-//        t1.start();
-//
-//
-//    }
-
-
 
 
     public static void main(String[] args) throws IOException {
@@ -124,6 +90,7 @@ public class BouncingBalls extends JPanel {
                     list.add(ball);
                     paintChildren(getGraphics());
                     BallThread t = new BallThread(ball);
+                    cliente.close();
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
