@@ -14,18 +14,20 @@ import java.util.Vector;
 public class BouncingBalls extends JPanel {
     public final static int width = 500;
     public final static int height = 400;
-    public ServerSocket servidor = new ServerSocket(12345);
+    private final static int port = 12345;
+
+    public ServerSocket servidor = new ServerSocket(port);
     private Vector<Ball> list = new Vector();
 
     public BouncingBalls() throws IOException {
         setPreferredSize(new Dimension(width, height));
 
-
-            BallThread ballMove = new BallThread();
-            ballMove.start();
+//
+//            BallThread ballMove = new BallThread();
+//            ballMove.start();
 
             EntradaBalls entradas = new EntradaBalls();
-            entradas.start();
+//            entradas.start();
 
 //
 //        addMouseListener(new MouseAdapter() {
@@ -79,15 +81,18 @@ public class BouncingBalls extends JPanel {
     public class BallThread extends Thread{
 
         public boolean cont = false;
+        public Ball ball;
+        public BallThread (Ball ball) {
+            this.ball = ball;
+            this.start();
+        }
 
         public synchronized void run() {
             cont = true;
             while(cont) {
-                for (Ball b : list ){
-                    b.move();
-//                    repaint();
 
-                }
+                System.out.println( Thread.currentThread() + "moving" +ball.getID());
+                    ball.move();
                 repaint();
 
                 try {
@@ -104,13 +109,13 @@ public class BouncingBalls extends JPanel {
 
         private Socket socket;
 
-        public EntradaBalls(Socket socket) {
+        public  EntradaBalls(Socket socket) {
             this.socket = socket;
         }
         public EntradaBalls() {
-
+        this.start();
         }
-        public void run(){
+        public synchronized void run(){
             while(true) {
                 try {
                     Socket cliente = servidor.accept();
@@ -118,6 +123,7 @@ public class BouncingBalls extends JPanel {
                     Ball ball = (Ball) entrada.readObject();
                     list.add(ball);
                     paintChildren(getGraphics());
+                    BallThread t = new BallThread(ball);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
