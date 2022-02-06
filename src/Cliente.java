@@ -10,7 +10,10 @@ public class Cliente extends Thread {
         try {
             Thread.sleep(2000);
             Socket socket = new Socket(host, port);
-            Ball ball = new Ball(0, 0);
+            if (socket.isConnected()) {
+                System.out.println("Client is connect "+"\n"+ "information port connection : "+socket.getLocalPort());
+            }
+            Ball ball = new Ball(10, 0);
             ObjectOutputStream saida = new ObjectOutputStream(socket.getOutputStream());
             saida.writeObject(ball);
         } catch (Exception e) {
