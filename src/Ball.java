@@ -10,12 +10,12 @@ public class Ball implements Serializable {
     private int dx = 3;
     private int dy = 6;
     private String id;
-
+    private boolean conectado = true;
 
     public Ball(int x, int y) {
         this.x = x;
         this.y = y;
-        color = new Color(x % 256, y % 256, (x + y) % 256);
+        color = new Color((x % 256)*(int) (Math.random()*10), (y % 256)*(int) (Math.random()*10), (x + y) % 256);
         dx = x % 10 + 1;
         dy = y % 10 + 1;
         criarID();
@@ -47,5 +47,11 @@ public class Ball implements Serializable {
         paint.setColor(color);
         paint.fillOval(x, y, diameter, diameter);
 
+    }
+    public void desconectarBola() {
+        this.conectado = false;
+    }
+    public boolean ballIsConnect() {
+        return this.conectado;
     }
 }

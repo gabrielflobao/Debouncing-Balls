@@ -16,21 +16,25 @@ public class BouncingBalls extends JPanel {
     public final static int height = 400;
     private final static int port = 12345;
 
-    public ServerSocket servidor = new ServerSocket(port);
+    public ServerSocket server = new ServerSocket(port);
     private Vector<Ball> list = new Vector();
 
     public BouncingBalls() throws IOException {
         setPreferredSize(new Dimension(width, height));
-            EntradaBalls entradas = new EntradaBalls();
+        EntradaBalls entradas = new EntradaBalls();
     }
 
     public synchronized void paintChildren(Graphics g) {
         for (Ball ball : list) {
             ball.paint(g);
-            ball.move();
         }
     }
 
+    public synchronized void paintChildren(Graphics g, Ball b) {
+
+        b.paint(g);
+
+    }
 
     public static void main(String[] args) throws IOException {
 
@@ -42,56 +46,75 @@ public class BouncingBalls extends JPanel {
         frame.setVisible(true);
 
 
-
     }
-    public class BallThread extends Thread{
+
+    public class BallThread extends Thread {
 
         public boolean cont = false;
         public Ball ball;
-        public BallThread (Ball ball) {
+        private ServerSocket servidor;
+        private Socket cliente;
+        private int trava = 0;
+
+
+        public BallThread(Ball ball) {
             this.ball = ball;
             this.start();
         }
 
-        public synchronized void run() {
-            cont = true;
-            while(cont) {
 
-                System.out.println( Thread.currentThread() + "moving" +ball.getID());
-                    ball.move();
-                repaint();
-
-                try {
-                    Thread.sleep(50);
-                }catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        public BallThread(ServerSocket server, Socket cliente) {
+            this.servidor = server;
+            this.cliente = cliente;
+            this.start();
         }
 
+
+        public synchronized void run() {
+            try {
+                ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
+                Ball bola = (Ball) entrada.readObject();
+                list.add(bola);
+                paintChildren(getGraphics());
+
+                while (this.trava != 60) {
+                    bola.move();
+                    System.out.println(Thread.currentThread());
+                    repaint();
+                    Thread.sleep(50);
+                    trava++;
+                    if(trava==60) {
+                        cliente.close();
+                        System.out.println("Cliente desligado "+cliente.getPort());
+                        trava= 60;
+                        list.remove(bola);
+                        System.out.println(list.remove(bola));
+                        repaint();
+
+                    }
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public class EntradaBalls extends Thread {
 
-        private Socket socket;
-
-        public  EntradaBalls(Socket socket) {
-            this.socket = socket;
-        }
         public EntradaBalls() {
-        this.start();
+            this.start();
         }
-        public synchronized void run(){
-            while(true) {
+
+        public synchronized void run() {
+            while (true) {
                 try {
-                    Socket cliente = servidor.accept();
-                    ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
-                    Ball ball = (Ball) entrada.readObject();
-                    list.add(ball);
-                    paintChildren(getGraphics());
-                    BallThread t = new BallThread(ball);
-                    cliente.close();
-                } catch (IOException | ClassNotFoundException e) {
+                    Socket cliente = server.accept();
+                    BallThread t = new BallThread(server, cliente);
+                    System.out.println("-----------------");
+
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
