@@ -77,18 +77,17 @@ public class BouncingBalls extends JPanel {
                 list.add(bola);
                 paintChildren(getGraphics());
 
-                while (this.trava != 60) {
+                while (this.trava != 30) {
                     bola.move();
                     System.out.println(Thread.currentThread());
                     repaint();
                     Thread.sleep(50);
                     trava++;
-                    if(trava==60) {
+                    if(trava==30) {
                         cliente.close();
                         System.out.println("Cliente desligado "+cliente.getPort());
-                        trava= 60;
+                        trava= 30;
                         list.remove(bola);
-                        System.out.println(list.remove(bola));
                         repaint();
 
                     }
