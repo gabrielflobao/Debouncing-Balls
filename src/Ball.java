@@ -15,7 +15,7 @@ public class Ball implements Serializable {
     public Ball(int x, int y) {
         this.x = x;
         this.y = y;
-        color = new Color((x % 256)*(int) (Math.random()*10), (y % 256)*(int) (Math.random()*10), (x + y) % 256);
+        color = new Color((x % 256), (y % 256), (x + y) % 256);
         dx = x % 10 + 1;
         dy = y % 10 + 1;
         criarID();

@@ -10,11 +10,15 @@ public class Cliente extends Thread {
 
     @Override
     public synchronized void run() {
+
+
         try {
-            Thread.sleep(2000);
+            int x,y;
+            x = (int) (Math.random()*400);
+            y = (int) (Math.random()*500);
             Socket socket = new Socket(host, port);
             clienteConectado(socket);
-            Ball ball = new Ball(0, 0);
+            Ball ball = new Ball( x, y);
             ObjectOutputStream saida = new ObjectOutputStream(socket.getOutputStream());
             saida.writeObject(ball);
 
